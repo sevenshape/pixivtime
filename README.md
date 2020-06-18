@@ -11,6 +11,6 @@
 配置conan  
 `cd conan_build`  
 `conan install ..`  
-cmake生成  
+cmake生成，需要先安装vs2019 C++  
 `cd ..`  
-`cmake -Bbuild`  
+`cmake -G"Visual Studio 16 2019" -Bbuild`  
