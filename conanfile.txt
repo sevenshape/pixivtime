@@ -1,0 +1,7 @@
+[requires]
+libcurl/7.69.1
+opencv/2.4.13.5@conan/stable
+zlib/1.2.11
+
+[generators]
+cmake
