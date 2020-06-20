@@ -7,7 +7,7 @@
 使用Python >= 3.5 pip安装conan  
 `pip install conan`  
 在项目根目录新建文件夹"conan_build"  
-`cd pixivtime` 
+`cd pixivtime`  
 `md conan_build`  
 配置conan，需要先安装vs2019 C++  
 `cd conan_build`  
