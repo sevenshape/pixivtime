@@ -3,3 +3,8 @@
 ################################################################################
 
 /build
+/conan_build/graph_info.json
+/conan_build/conaninfo.txt
+/conan_build/conanbuildinfo.txt
+/conan_build/conanbuildinfo.cmake
+/conan_build/conan.lock

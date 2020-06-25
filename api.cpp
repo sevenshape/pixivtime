@@ -96,13 +96,15 @@ std::string api::appSearch(std::string word, int markLevel, int page, std::vecto
             {
                 if (res->at(size + i - subSize).x_restrict != 0)
                 {
-                    res->erase(res->begin() + size + i - subSize);
+                    res->erase(res->begin() + (size + i - subSize));
                     subSize++;
                 }
             }
+            if (res->empty())
+                break;
             if (res->at(size + i - subSize).total_bookmarks < markLevelVal[markLevel])
             {
-                res->erase(res->begin() + size + i - subSize);
+                res->erase(res->begin() + (size + i - subSize));
                 subSize++;
             }
         }
