@@ -3,6 +3,9 @@
 std::map<std::string, std::string> pixivtime::storage = std::map<std::string, std::string>();;
 bool pixivtime::showAppDevMessage = false;
 int pixivtime::imgRowsConfine = 12000;
+bool pixivtime::r18Confine = true;
+int pixivtime::timeConfine = 180;
+int pixivtime::numberConfine = 60;
 
 std::string api::imgProxy(std::string url)
 {
@@ -49,48 +52,18 @@ std::string api::search(std::string word, int page)
     }
 }
 
-std::string api::appSearch(std::string word, int markLevel, int page, std::vector<std::string>* res)
+std::string api::appSearch(std::string word, int markLevel, int page, std::vector<pixivtime::Illust>* res)
 {
+    std::vector<int> markLevelVal = {0, 100, 250, 500, 1000, 5000, 10000, 20000, 30000, 50000};
+    std::string bookmarkTemp = " 00users入り";
+    if((0 > markLevel) || (markLevel >= markLevelVal.size()))
+        return "markLevel错误";
     std::string bookmark;
-    switch (markLevel)
-    {
-    case 0:
-        bookmark = "";
-        break;
-    case 1:
-        bookmark = " 100users入り";
-        break;
-    case 2:
-        bookmark = " 250users入り";
-        break;
-    case 3:
-        bookmark = " 500users入り";
-        break;
-    case 4:
-        bookmark = " 1000users入り";
-        break;
-    case 5:
-        bookmark = " 5000users入り";
-        break;
-    case 6:
-        bookmark = " 10000users入り";
-        break;
-    case 7:
-        bookmark = " 20000users入り";
-        break;
-    case 8:
-        bookmark = " 30000users入り";
-        break;
-    case 9:
-        bookmark = " 50000users入り";
-        break;
-    default:
-        return "书签等级不在0-9";
-        break;
-    }
+    if(markLevel != 0)
+        bookmark = regex::replace(bookmarkTemp, "00", std::to_string(markLevelVal[markLevel]));
 
     std::string jsonStr = search(word + bookmark, page);
-    std::string url = "https://api.imjad.cn/pixiv/v2/?type=search&word=" + regex::utf8ToUrl(word) + "&page=" + std::to_string(page);
+    std::string url = "https://api.imjad.cn/pixiv/v2/?type=search&word=" + regex::utf8ToUrl(word + bookmark) + "&page=" + std::to_string(page);
     nlohmann::json json;
     try
     {
@@ -98,74 +71,72 @@ std::string api::appSearch(std::string word, int markLevel, int page, std::vecto
     }
     catch (nlohmann::json::exception& e)
     {
-        return "格式错误" + url;
+        return "json错误" + url;
     }
 
     if (json.find("illusts") != json.end())
     {
-        nlohmann::json targetIllusts;
+        int size = res->size();
         if (json["illusts"].is_array())
         {
             for (int i = 0; i < json["illusts"].size(); i++)
             {
-                if ((json["illusts"][i].find("id") != json["illusts"][i].end()) && json["illusts"][i]["id"].is_number_integer())
-                {
-                    std::string id = std::to_string(json["illusts"][i]["id"].get<int>());
-                    int mangaSize = json["illusts"][i]["meta_pages"].size();
-                    if (mangaSize == 0)
-                    {
-                        res->push_back(id + ".jpg");
-                    }
-                    else
-                    {
-                        for(int i=0; i<mangaSize; i++)
-                        {
-                            res->push_back(id + "-" + std::to_string(i+1) + ".jpg");
-                        }
-                    }
-                }
-                else
-                {
-                    return "id丢失" + url;
-                }
+                res->push_back(pixivtime::Illust(json["illusts"][i]));
             }
         }
         else
         {
-            if ((json["illusts"].find("id") != json["illusts"].end()) && json["illusts"]["id"].is_number_integer())
+            res->push_back(pixivtime::Illust(json["illusts"]));
+        }
+        int addSize = res->size() - size;
+        int subSize = 0;
+        for (int i = 0; i<addSize; i++)
+        {
+            if (pixivtime::r18Confine)
             {
-                std::string id = std::to_string(json["illusts"]["id"].get<int>());
-                res->push_back(id + ".jpg");
+                if (res->at(size + i - subSize).x_restrict != 0)
+                {
+                    res->erase(res->begin() + size + i - subSize);
+                    subSize++;
+                }
             }
-            else
+            if (res->at(size + i - subSize).total_bookmarks < markLevelVal[markLevel])
             {
-                return "id丢失" + url;
+                res->erase(res->begin() + size + i - subSize);
+                subSize++;
             }
         }
     }
     else
     {
-        return "找不到插图" + url;
+        return "找不到插画" + url;
     }
     return "成功";
 }
 
-void api::appSearch(int conSize, std::string word, std::vector<std::string>* imgList)
+void api::appSearch(int conSize, std::string word, std::vector<pixivtime::Illust>* illustList)
 {
-    std::string result;
-    int resNum = 0;
-    
     int markLevel = 9;
-    for(int level=0; level<markLevel+1; level++)
+    for(int i=0; i<markLevel+1; i++)
     {
         for(int page=0; ; page++)
         {
-            int size = imgList->size();
-            appSearch(word, markLevel - level, page, imgList);
-            int addSize = imgList->size() - size;
-            if(imgList->size() > conSize)
+            int size = illustList->size();
+            appSearch(word, markLevel - i, page, illustList);
+            int addSize = illustList->size() - size;
+            if (illustList->size() > conSize)
             {
-                return;
+                std::vector<pixivtime::Illust>::iterator it, it1;
+                for (it = ++illustList->begin(); it != illustList->end();)
+                {
+                    it1 = std::find(illustList->begin(), it, *it);
+                    if (it1 != it)
+                        it = illustList->erase(it);
+                    else
+                        it++;
+                }
+                if (illustList->size() > conSize)
+                    return;
             }
             if(addSize < 30)
             {

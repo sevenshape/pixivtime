@@ -46,7 +46,7 @@ std::string* http::img::get(std::string url)
         curl_easy_setopt(curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
         curl_easy_setopt(curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
         curl_easy_setopt(curlHandle, CURLOPT_FOLLOWLOCATION, 1);
-        curl_easy_setopt(curlHandle, CURLOPT_TIMEOUT, 60);
+        //curl_easy_setopt(curlHandle, CURLOPT_TIMEOUT, 60);
         curl_easy_setopt(curlHandle, CURLOPT_WRITEFUNCTION, writeFunction);
     }
     
