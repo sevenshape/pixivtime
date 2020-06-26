@@ -80,7 +80,7 @@ struct api
 
     std::string getDate();
 
-    std::string appSearch(std::string word, int markLevel, int page, std::vector<pixivtime::Illust>* imgList);
+    std::string appSearch(std::string word, int markLevel, int page, std::vector<pixivtime::Illust>* imgList, int* addSizeOut);
 
     void appSearch(int conSize, std::string word, std::vector<pixivtime::Illust>* imgList);
 

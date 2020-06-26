@@ -52,7 +52,7 @@ std::string api::search(std::string word, int page)
     }
 }
 
-std::string api::appSearch(std::string word, int markLevel, int page, std::vector<pixivtime::Illust>* res)
+std::string api::appSearch(std::string word, int markLevel, int page, std::vector<pixivtime::Illust>* res, int* addSizeOut)
 {
     std::vector<int> markLevelVal = {0, 100, 250, 500, 1000, 5000, 10000, 20000, 30000, 50000};
     std::string bookmarkTemp = " 00users入り";
@@ -108,6 +108,8 @@ std::string api::appSearch(std::string word, int markLevel, int page, std::vecto
                 subSize++;
             }
         }
+        if(addSizeOut)
+            *addSizeOut = addSize;
     }
     else
     {
@@ -123,9 +125,8 @@ void api::appSearch(int conSize, std::string word, std::vector<pixivtime::Illust
     {
         for(int page=0; ; page++)
         {
-            int size = illustList->size();
-            appSearch(word, markLevel - i, page, illustList);
-            int addSize = illustList->size() - size;
+            int addSize = 0;
+            appSearch(word, markLevel - i, page, illustList, &addSize);
             if (illustList->size() > conSize)
             {
                 std::vector<pixivtime::Illust>::iterator it, it1;
