@@ -1,7 +1,7 @@
 # pixivtime
 一款轻便的pixiv查找整合插件
 
-命令：角色名+time，建议用日文，例:蕾姆time, 日文:レムtime，r18限制开:r18Confine on, r18限制关r18:r18Confine off, 发100个插画(默认60):numberConfine 100",
+命令:角色名+time, 建议用日文, 例:蕾姆time, 日文:レムtime, r18限制开:r18Confine on, r18限制关r18:r18Confine off, 发100个插画(默认60):numberConfine 100
 
 ## BUILD
 基于conan和cmake构建  
