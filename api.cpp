@@ -4,7 +4,7 @@ std::map<std::string, std::string> pixivtime::storage = std::map<std::string, st
 bool pixivtime::showAppDevMessage = false;
 int pixivtime::imgRowsConfine = 12000;
 bool pixivtime::r18Confine = true;
-int pixivtime::timeConfine = 180;
+unsigned int pixivtime::timeConfine = 240;
 int pixivtime::numberConfine = 60;
 
 std::string api::imgProxy(std::string url)
@@ -89,24 +89,26 @@ std::string api::appSearch(std::string word, int markLevel, int page, std::vecto
             res->push_back(pixivtime::Illust(json["illusts"]));
         }
         int addSize = res->size() - size;
-        int subSize = 0;
-        for (int i = 0; i<addSize; i++)
+        std::vector<pixivtime::Illust>::iterator it;
+        it = res->begin() + size;
+        if (pixivtime::r18Confine)
         {
-            if (pixivtime::r18Confine)
+            for (int i = 0; it != res->end(); i++)
             {
-                if (res->at(size + i - subSize).x_restrict != 0)
-                {
-                    res->erase(res->begin() + (size + i - subSize));
-                    subSize++;
-                }
+
+                if (it->x_restrict != 0)
+                    it = res->erase(it);
+                else
+                    it++;
             }
-            if (res->empty())
-                break;
-            if (res->at(size + i - subSize).total_bookmarks < markLevelVal[markLevel])
-            {
-                res->erase(res->begin() + (size + i - subSize));
-                subSize++;
-            }
+        }
+        it = res->begin() + size;
+        for (int i = 0; it != res->end(); i++)
+        {
+            if (it->total_bookmarks < markLevelVal[markLevel])
+                it = res->erase(it);
+            else
+                it++;
         }
         if(addSizeOut)
             *addSizeOut = addSize;

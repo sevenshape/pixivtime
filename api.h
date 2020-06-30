@@ -21,7 +21,7 @@ namespace pixivtime
 
     extern bool r18Confine;
 
-    extern int timeConfine;
+    extern unsigned int timeConfine;
 
     extern int numberConfine;
 

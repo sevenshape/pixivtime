@@ -12,16 +12,24 @@ CQ_INIT
         std::string message = cq::message::unescape(event.message);
         std::string mesHead;
 
-        if (message == "r18 on")
-        {
-            pixivtime::r18Confine = false;
-            return;
-        }
-        if (message == "r18 off")
+        if (message == "r18Confine on")
         {
             pixivtime::r18Confine = true;
             return;
         }
+        if (message == "r18Confine off")
+        {
+            pixivtime::r18Confine = false;
+            return;
+        }
+        mesHead = regex::oneSearch(message, R"(^numberConfine [123456789]\d{0,8}$)");
+        mesHead = regex::oneSearch(message, R"(\d+)");
+        if (mesHead != "")
+        {
+            pixivtime::numberConfine = atoi(mesHead.c_str());
+            pixivtime::timeConfine = pixivtime::numberConfine * 4;//得数为0至3,999,999,996‬
+        }
+
         mesHead = regex::oneSearch(message, R"(^.*?time$)");
         if (mesHead != "")
         {
