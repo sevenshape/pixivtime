@@ -1,4 +1,6 @@
 # pixivtime
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsevenshape%2Fpixivtime.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsevenshape%2Fpixivtime?ref=badge_shield)
+
 一款轻便的pixiv查找整合插件
 
 命令:角色名+time, 建议用日文, 例:蕾姆time, 日文:レムtime, r18限制开:r18Confine on, r18限制关r18:r18Confine off, 发100个插画(默认60):numberConfine 100
@@ -20,3 +22,7 @@ cmake生成
 
     cd ..  
     cmake -G"Visual Studio 16 2019" -Bbuild  
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsevenshape%2Fpixivtime.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsevenshape%2Fpixivtime?ref=badge_large)
